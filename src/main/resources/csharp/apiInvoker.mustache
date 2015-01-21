@@ -37,7 +37,9 @@
       public static string serialize(object obj) {
         try
         {
-            return obj != null ? JsonConvert.SerializeObject(obj) : null;
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            return obj != null ? JsonConvert.SerializeObject(obj, settings) : null;
         }
         catch (Exception e) {
           throw new ApiException(500, e.Message);
@@ -120,7 +122,7 @@
           try
           {
               var webResponse = (HttpWebResponse)client.GetResponse();
-              if (webResponse.StatusCode != HttpStatusCode.OK)
+              if (webResponse.StatusCode != HttpStatusCode.OK && webResponse.StatusCode != HttpStatusCode.Created)
               {
                   webResponse.Close();
                   throw new ApiException((int)webResponse.StatusCode, webResponse.StatusDescription);
